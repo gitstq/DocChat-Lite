@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="DocChat-Lite - 轻量级文档知识库对话引擎">
+    <meta name="theme-color" content="#1a1a2e">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>DocChat-Lite</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="manifest" href="manifest.json">
+</head>
+<body>
+    <!-- 应用容器 -->
+    <div id="app" class="app-container">
+        <!-- 侧边栏 -->
+        <aside id="sidebar" class="sidebar" role="navigation" aria-label="主导航">
+            <!-- 侧边栏头部 -->
+            <div class="sidebar-header">
+                <div class="logo">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                        <polyline points="10 9 9 9 8 9"></polyline>
+                    </svg>
+                    <span class="logo-text">DocChat-Lite</span>
+                </div>
+                <button id="btn-toggle-sidebar" class="btn-icon sidebar-toggle" aria-label="收起侧边栏" title="收起侧边栏">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- 新建按钮组 -->
+            <div class="sidebar-actions">
+                <button id="btn-new-chat" class="btn btn-primary btn-sm" aria-label="新建对话" title="Ctrl+N">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                    </svg>
+                    <span>新建对话</span>
+                </button>
+                <button id="btn-upload-file" class="btn btn-secondary btn-sm" aria-label="上传文档" title="Ctrl+O">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="17 8 12 3 7 8"></polyline>
+                        <line x1="12" y1="3" x2="12" y2="15"></line>
+                    </svg>
+                    <span>上传文档</span>
+                </button>
+            </div>
+
+            <!-- 标签页切换 -->
+            <div class="sidebar-tabs" role="tablist">
+                <button class="sidebar-tab active" data-tab="chats" role="tab" aria-selected="true" aria-controls="panel-chats">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                    </svg>
+                    <span>对话</span>
+                </button>
+                <button class="sidebar-tab" data-tab="docs" role="tab" aria-selected="false" aria-controls="panel-docs">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                    </svg>
+                    <span>文档</span>
+                </button>
+            </div>
+
+            <!-- 对话列表面板 -->
+            <div id="panel-chats" class="sidebar-panel active" role="tabpanel">
+                <div id="chat-list" class="sidebar-list">
+                    <!-- 动态渲染对话列表 -->
+                </div>
+                <div id="chat-list-empty" class="sidebar-empty">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.4">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                    </svg>
+                    <p>暂无对话</p>
+                    <p class="hint">点击"新建对话"开始</p>
+                </div>
+            </div>
+
+            <!-- 文档列表面板 -->
+            <div id="panel-docs" class="sidebar-panel" role="tabpanel">
+                <div id="doc-list" class="sidebar-list">
+                    <!-- 动态渲染文档列表 -->
+                </div>
+                <div id="doc-list-empty" class="sidebar-empty">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.4">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                    </svg>
+                    <p>暂无文档</p>
+                    <p class="hint">上传文档以构建知识库</p>
+                </div>
+            </div>
+
+            <!-- 侧边栏底部 -->
+            <div class="sidebar-footer">
+                <button id="btn-search" class="btn-icon" aria-label="搜索" title="Ctrl+K">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                </button>
+                <button id="btn-settings" class="btn-icon" aria-label="设置">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="3"></circle>
+                        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                    </svg>
+                </button>
+                <button id="btn-toggle-theme" class="btn-icon" aria-label="切换主题">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-sun">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-moon" style="display:none;">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                </button>
+            </div>
+        </aside>
+
+        <!-- 移动端侧边栏遮罩 -->
+        <div id="sidebar-overlay" class="sidebar-overlay" aria-hidden="true"></div>
+
+        <!-- 主内容区 -->
+        <main id="main-content" class="main-content" role="main">
+            <!-- 顶部工具栏 -->
+            <header id="toolbar" class="toolbar">
+                <button id="btn-show-sidebar" class="btn-icon mobile-only" aria-label="显示侧边栏">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                    </svg>
+                </button>
+                <div id="toolbar-title" class="toolbar-title">DocChat-Lite</div>
+                <div class="toolbar-actions">
+                    <button id="btn-toolbar-search" class="btn-icon" aria-label="搜索" title="Ctrl+K">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                    </button>
+                </div>
+            </header>
+
+            <!-- 视图容器 -->
+            <div id="view-container" class="view-container">
+                <!-- 欢迎视图 -->
+                <div id="view-welcome" class="view active">
+                    <div class="welcome-content">
+                        <div class="welcome-icon">
+                            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14 2 14 8 20 8"></polyline>
+                                <line x1="16" y1="13" x2="8" y2="13"></line>
+                                <line x1="16" y1="17" x2="8" y2="17"></line>
+                                <polyline points="10 9 9 9 8 9"></polyline>
+                            </svg>
+                        </div>
+                        <h1>欢迎使用 DocChat-Lite</h1>
+                        <p class="welcome-desc">轻量级文档知识库对话引擎，上传文档后即可开始智能问答</p>
+                        <div class="welcome-actions">
+                            <button id="btn-welcome-upload" class="btn btn-primary">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                    <polyline points="17 8 12 3 7 8"></polyline>
+                                    <line x1="12" y1="3" x2="12" y2="15"></line>
+                                </svg>
+                                <span>上传文档</span>
+                            </button>
+                            <button id="btn-welcome-chat" class="btn btn-secondary">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                                </svg>
+                                <span>开始对话</span>
+                            </button>
+                        </div>
+                        <div class="welcome-features">
+                            <div class="feature-item">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                    <polyline points="14 2 14 8 20 8"></polyline>
+                                </svg>
+                                <span>支持 TXT / MD / JSON / CSV / HTML</span>
+                            </div>
+                            <div class="feature-item">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="11" cy="11" r="8"></circle>
+                                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                                </svg>
+                                <span>TF-IDF 全文检索，支持中文</span>
+                            </div>
+                            <div class="feature-item">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                                    <line x1="8" y1="21" x2="16" y2="21"></line>
+                                    <line x1="12" y1="17" x2="12" y2="21"></line>
+                                </svg>
+                                <span>OpenAI 兼容 API，流式响应</span>
+                            </div>
+                            <div class="feature-item">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                                </svg>
+                                <span>离线优先，数据本地存储</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 文档查看视图 -->
+                <div id="view-document" class="view">
+                    <div class="doc-viewer-header">
+                        <div class="doc-viewer-info">
+                            <span id="doc-viewer-name" class="doc-viewer-name"></span>
+                            <span id="doc-viewer-meta" class="doc-viewer-meta"></span>
+                        </div>
+                        <div class="doc-viewer-actions">
+                            <button id="btn-doc-delete" class="btn-icon btn-danger" aria-label="删除文档" title="删除文档">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="3 6 5 6 21 6"></polyline>
+                                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div id="doc-viewer-content" class="doc-viewer-content">
+                        <!-- 文档内容动态渲染 -->
+                    </div>
+                </div>
+
+                <!-- 对话视图 -->
+                <div id="view-chat" class="view">
+                    <div id="chat-messages" class="chat-messages" role="log" aria-live="polite">
+                        <!-- 对话消息动态渲染 -->
+                    </div>
+                    <div class="chat-input-area">
+                        <div id="chat-context-info" class="chat-context-info" style="display:none;">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="12" y1="16" x2="12" y2="12"></line>
+                                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                            </svg>
+                            <span id="chat-context-text">已关联文档上下文</span>
+                        </div>
+                        <div class="chat-input-wrapper">
+                            <textarea id="chat-input" class="chat-input" placeholder="输入消息... (Shift+Enter 换行)" rows="1" aria-label="消息输入框"></textarea>
+                            <button id="btn-send" class="btn-icon btn-send" aria-label="发送消息" title="发送">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <line x1="22" y1="2" x2="11" y2="13"></line>
+                                    <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="chat-input-hint">
+                            <span>Shift+Enter 换行 | Enter 发送</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- 搜索模态框 -->
+    <div id="modal-search" class="modal" role="dialog" aria-modal="true" aria-label="搜索">
+        <div class="modal-backdrop"></div>
+        <div class="modal-content modal-search-content">
+            <div class="search-input-wrapper">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+                <input id="search-input" type="text" class="search-input" placeholder="搜索文档内容..." aria-label="搜索输入" autocomplete="off">
+                <kbd class="kbd">ESC</kbd>
+            </div>
+            <div id="search-results" class="search-results">
+                <!-- 搜索结果动态渲染 -->
+            </div>
+            <div id="search-empty" class="search-empty" style="display:none;">
+                <p>未找到相关内容</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 设置模态框 -->
+    <div id="modal-settings" class="modal" role="dialog" aria-modal="true" aria-label="设置">
+        <div class="modal-backdrop"></div>
+        <div class="modal-content modal-settings-content">
+            <div class="modal-header">
+                <h2>设置</h2>
+                <button id="btn-close-settings" class="btn-icon" aria-label="关闭设置">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- API 设置 -->
+                <div class="settings-section">
+                    <h3 class="settings-section-title">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                            <line x1="8" y1="21" x2="16" y2="21"></line>
+                            <line x1="12" y1="17" x2="12" y2="21"></line>
+                        </svg>
+                        API 配置
+                    </h3>
+                    <div class="form-group">
+                        <label for="setting-api-endpoint" class="form-label">API 地址</label>
+                        <input id="setting-api-endpoint" type="url" class="form-input" placeholder="https://api.openai.com/v1/chat/completions">
+                        <p class="form-hint">OpenAI 兼容的 Chat Completions API 地址</p>
+                    </div>
+                    <div class="form-group">
+                        <label for="setting-api-key" class="form-label">API 密钥</label>
+                        <div class="input-password-wrapper">
+                            <input id="setting-api-key" type="password" class="form-input" placeholder="sk-...">
+                            <button id="btn-toggle-api-key" class="btn-icon input-action" aria-label="显示/隐藏密钥">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                    <circle cx="12" cy="12" r="3"></circle>
+                                </svg>
+                            </button>
+                        </div>
+                        <p class="form-hint">密钥仅存储在本地浏览器中</p>
+                    </div>
+                    <div class="form-group">
+                        <label for="setting-model-name" class="form-label">模型名称</label>
+                        <input id="setting-model-name" type="text" class="form-input" placeholder="gpt-3.5-turbo">
+                        <p class="form-hint">例如: gpt-3.5-turbo, gpt-4, deepseek-chat 等</p>
+                    </div>
+                </div>
+
+                <!-- 外观设置 -->
+                <div class="settings-section">
+                    <h3 class="settings-section-title">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="5"></circle>
+                            <line x1="12" y1="1" x2="12" y2="3"></line>
+                            <line x1="12" y1="21" x2="12" y2="23"></line>
+                            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                            <line x1="1" y1="12" x2="3" y2="12"></line>
+                            <line x1="21" y1="12" x2="23" y2="12"></line>
+                            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                        </svg>
+                        外观
+                    </h3>
+                    <div class="form-group">
+                        <label class="form-label">主题</label>
+                        <div class="theme-selector" role="radiogroup" aria-label="选择主题">
+                            <button class="theme-option active" data-theme="dark" role="radio" aria-checked="true">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                                </svg>
+                                <span>深色</span>
+                            </button>
+                            <button class="theme-option" data-theme="light" role="radio" aria-checked="false">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="12" cy="12" r="5"></circle>
+                                    <line x1="12" y1="1" x2="12" y2="3"></line>
+                                    <line x1="12" y1="21" x2="12" y2="23"></line>
+                                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                                    <line x1="1" y1="12" x2="3" y2="12"></line>
+                                    <line x1="21" y1="12" x2="23" y2="12"></line>
+                                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                                </svg>
+                                <span>浅色</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 数据管理 -->
+                <div class="settings-section">
+                    <h3 class="settings-section-title">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                        </svg>
+                        数据管理
+                    </h3>
+                    <div class="form-group">
+                        <div class="settings-stats" id="settings-stats">
+                            <!-- 动态渲染统计数据 -->
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="settings-actions">
+                            <button id="btn-export-data" class="btn btn-secondary btn-sm">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                    <polyline points="7 10 12 15 17 10"></polyline>
+                                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                                </svg>
+                                <span>导出数据</span>
+                            </button>
+                            <button id="btn-clear-data" class="btn btn-danger btn-sm">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="3 6 5 6 21 6"></polyline>
+                                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                </svg>
+                                <span>清除所有数据</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="btn-save-settings" class="btn btn-primary">保存设置</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 文件上传模态框 -->
+    <div id="modal-upload" class="modal" role="dialog" aria-modal="true" aria-label="上传文档">
+        <div class="modal-backdrop"></div>
+        <div class="modal-content modal-upload-content">
+            <div class="modal-header">
+                <h2>上传文档</h2>
+                <button id="btn-close-upload" class="btn-icon" aria-label="关闭上传">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="drop-zone" class="drop-zone" role="button" tabindex="0" aria-label="拖放文件到此处或点击选择">
+                    <div class="drop-zone-content">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="17 8 12 3 7 8"></polyline>
+                            <line x1="12" y1="3" x2="12" y2="15"></line>
+                        </svg>
+                        <p class="drop-zone-text">拖放文件到此处</p>
+                        <p class="drop-zone-hint">或点击选择文件</p>
+                        <p class="drop-zone-formats">支持格式: TXT, MD, JSON, CSV, HTML</p>
+                    </div>
+                </div>
+                <input id="file-input" type="file" multiple accept=".txt,.md,.json,.csv,.html,.htm" style="display:none;">
+                <div id="upload-list" class="upload-list">
+                    <!-- 上传文件列表动态渲染 -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="btn-cancel-upload" class="btn btn-secondary">取消</button>
+                <button id="btn-confirm-upload" class="btn btn-primary" disabled>上传</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 确认对话框 -->
+    <div id="modal-confirm" class="modal" role="dialog" aria-modal="true" aria-label="确认">
+        <div class="modal-backdrop"></div>
+        <div class="modal-content modal-confirm-content">
+            <div class="modal-header">
+                <h2 id="confirm-title">确认操作</h2>
+            </div>
+            <div class="modal-body">
+                <p id="confirm-message">确定要执行此操作吗？</p>
+            </div>
+            <div class="modal-footer">
+                <button id="btn-confirm-cancel" class="btn btn-secondary">取消</button>
+                <button id="btn-confirm-ok" class="btn btn-danger">确定</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast 通知容器 -->
+    <div id="toast-container" class="toast-container" aria-live="assertive"></div>
+
+    <!-- 加载指示器 -->
+    <div id="loading-overlay" class="loading-overlay" style="display:none;">
+        <div class="loading-spinner">
+            <div class="spinner"></div>
+            <p id="loading-text">加载中...</p>
+        </div>
+    </div>
+
+    <!-- 隐藏的文件输入（用于快捷键触发） -->
+    <input id="hidden-file-input" type="file" multiple accept=".txt,.md,.json,.csv,.html,.htm" style="display:none;">
+
+    <!-- 脚本加载 -->
+    <script src="js/utils.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/parser.js"></script>
+    <script src="js/search.js"></script>
+    <script src="js/chat.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
